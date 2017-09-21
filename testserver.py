@@ -47,6 +47,6 @@ class PostHandler(BaseHTTPRequestHandler):
         return
 
 if __name__ == '__main__':
-    server = HTTPServer(('localhost', 8080), PostHandler)
+    server = HTTPServer(('localhost', 8081), PostHandler)
     print('Starting server, use <Ctrl-C> to stop')
     server.serve_forever()
