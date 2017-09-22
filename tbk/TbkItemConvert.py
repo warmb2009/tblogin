@@ -45,7 +45,7 @@ class TbkItemConvertCommodity():
         self.sended_commodity_url = ''
         
         # 无界面设置
-        #self.initDisplay()
+        self.initDisplay()
         self.get(self.login_url)
         
     def get(self, url):

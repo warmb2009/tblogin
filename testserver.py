@@ -5,6 +5,7 @@ import io,shutil
 import cgi
 from tbinfo import *
 
+
 pid = 'mm_40512286_19754960_68174640'
 
 class PostHandler(BaseHTTPRequestHandler):
@@ -44,7 +45,7 @@ class PostHandler(BaseHTTPRequestHandler):
         else:
             print(self.path, ' not recognize')
             print('|', self.path.strip(), '|')
-        return
+        return 'success'
 
 if __name__ == '__main__':
     server = HTTPServer(('localhost', 8081), PostHandler)

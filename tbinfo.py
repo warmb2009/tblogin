@@ -4,8 +4,15 @@ import re
 from tbk.TbkItemConvert import *
 from tbk.TbkItemConvert import TbkItemConvertCoupon
 from tbk.loggingset import create_logger
-Loger = create_logger()
+import requests
 
+Loger = create_logger()
+postURL = 'http://127.0.0.1:8080/ajax/tbinfoadd/'
+
+def postInfo(url, dic):
+    r = requests.post(url, data = dic)
+    print(r)
+    
 #正则表达式获取券链接和商品链接
 def get_url(text):
     matchObj = re.findall( r'(.*)领券(.*)抢购(.*https?://[ -~]+.*id=\d{11,12})(.*)', text)
@@ -30,10 +37,11 @@ def testCommodity(url):
     if f_url == 'https://s.click.taobao.com':
         url = decodeURL(url)
     return url
+
 #将从QQ群获取的内容转换为券链接和商品链接
 def convert(text, pid):
     links = get_url(text)
-    if links:
+    if links is not False:
         #获取简单数据
         link = links[0]
         
@@ -62,6 +70,7 @@ def convert(text, pid):
         dic['imageurl'] = img_src
 
         printdic(dic)
+        postInfo(postURL, dic)
         return dic
     else:
         return False
