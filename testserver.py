@@ -37,9 +37,9 @@ class PostHandler(BaseHTTPRequestHandler):
             print(sender)
             print(content)
             
-            dic = convert(content, pid)
+            dic = getCommodityInfo(content, pid)
             if dic is not False:
-                print(dic['title'], dic['price'], dic['coupon'], dic['commodity'], dic['content'])
+                print(dic)
             else:
                 print('error of get info')
         else:
