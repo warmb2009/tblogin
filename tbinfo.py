@@ -5,11 +5,9 @@ from tbk.TbkSeniorAPI import *
 from tbk.loggingset import create_logger
 import requests
 import json
+from config import UPDATE_URL, CREATE_URL, POST_URL
 
 Loger = create_logger()
-post_url = 'http://127.0.0.1:8080/tkapis/'
-create_url = 'http://127.0.0.1:8080/tkapis/create/'
-update_url = 'http://127.0.0.1:8080/tkapis/update/'
 tbk = TBK()
 
 
@@ -24,12 +22,12 @@ def post_info(url, dic, item_id):
 
     if request_info == '[]':  # 不存在Item
         Loger.info('创建数据')
-        switch_url = create_url
+        switch_url = CREATE_URL
         r = requests.post(switch_url, data=dic)
         Loger.info(r.text)
     else:
         Loger.info('更新数据')
-        switch_url = update_url + item_id + '/'
+        switch_url = UPDATE_URL + item_id + '/'
         r = requests.put(switch_url, data=dic)
         Loger.info(r.text)
 
@@ -111,7 +109,7 @@ def get_commodity_info(text, pid):
 
     print_dic(dic)
     Loger.info('开始向django传输数据')
-    post_info(post_url, dic, item_id)
+    post_info(POST_URL, dic, item_id)
     return dic
 
 
