@@ -1,12 +1,12 @@
-#-*- coding:utf-8 -*-
+# -*- coding:utf-8 -*-
 
 from http.server import HTTPServer,BaseHTTPRequestHandler  
 import io,shutil  
 import cgi
 from tbinfo import *
 
-
 pid = 'mm_40512286_19754960_68174640'
+
 
 class PostHandler(BaseHTTPRequestHandler):
     def do_POST(self):
@@ -33,19 +33,20 @@ class PostHandler(BaseHTTPRequestHandler):
             name = form['name'].value
             sender = form['sender'].value
             content = form['content'].value
-            print(name)
-            print(sender)
-            print(content)
+            print('名称:', name)
+            print('发送:', sender)
+            print('内容:',content)
             
-            dic = getCommodityInfo(content, pid)
+            dic = get_commodity_info(content, pid)
             if dic is not False:
-                print(dic)
+                print('字典:', dic)
             else:
                 print('error of get info')
         else:
             print(self.path, ' not recognize')
             print('|', self.path.strip(), '|')
         return 'success'
+
 
 if __name__ == '__main__':
     server = HTTPServer(('localhost', 8081), PostHandler)
