@@ -4,8 +4,7 @@ from http.server import HTTPServer,BaseHTTPRequestHandler
 import io,shutil  
 import cgi
 from tbinfo import *
-
-pid = 'mm_40512286_19754960_68174640'
+from config import PID
 
 
 class PostHandler(BaseHTTPRequestHandler):
@@ -37,7 +36,7 @@ class PostHandler(BaseHTTPRequestHandler):
             print('发送:', sender)
             print('内容:',content)
             
-            dic = get_commodity_info(content, pid)
+            dic = get_commodity_info(content, PID)
             if dic is not False:
                 print('字典:', dic)
             else:
