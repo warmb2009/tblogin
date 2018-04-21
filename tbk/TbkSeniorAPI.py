@@ -6,20 +6,20 @@ import re
 from .loggingset import create_logger
 Loger = create_logger()
 
-class tbk():
+
+class TBK:
     def __init__(self):
         
-        self.appkey = '24570272'
+        self.app_key = '24570272'
         self.secret = '8527af97d41b62c19fc2df11ff3b4633'
         self.api_url = 'gw.api.taobao.com'
 
         self.baseURL = 'https://uland.taobao.com/coupon/edetail?'
         
     # 获取淘口令
-    def getTpwd(self, text, link_url):
-        
+    def get_tpwd(self, text, link_url):
         req = top.api.TbkTpwdCreateRequest(self.api_url)
-        req.set_app_info(top.appinfo(self.appkey, self.secret))
+        req.set_app_info(top.appinfo(self.app_key, self.secret))
         req.text = text
         req.url = link_url
         print(text)
@@ -34,69 +34,78 @@ class tbk():
             return False
 
     # 获取跳转后地址
-    def getTrueURL(self, url):
+    def get_true_url(self, url):
         _refer = requests.get(url).url
         headers = {'Referer': _refer}
         return requests.get(urllib.parse.unquote(_refer.split('tu=')[1]), headers=headers).url.split('&ali_trackid=')[0]
 
+    # 获取优惠券详细信息
+    def get_coupon_info(self, item_id, activity_id):
+        req = top.api.TbkCouponGetRequest(self.api_url)
+        req.set_app_info(top.appinfo(self.app_key, self.secret))
+
+        req.item_id = item_id
+        req.activity_id = activity_id
+
+        print('item id:', item_id)
+        print('activity id:', activity_id)
+
+        try:
+            resq = req.getResponse()
+            print(resq)
+            model = resq['tbk_coupon_get_response']['data']
+            return model
+        except Exception as e:
+            print(e)
+            return False
+
     # 获取商品信息
-    def getCommodityInfo(self, item_id):
+    def get_commodity_info(self, item_id):
         req = top.api.TbkItemInfoGetRequest(self.api_url)
-        req.set_app_info(top.appinfo(self.appkey, self.secret))
+        req.set_app_info(top.appinfo(self.app_key, self.secret))
  
-        req.fields = "num_iid,title,pict_url,small_images,reserve_price,zk_final_price,user_type,provcity,item_url"
+        req.fields = "num_iid,title,pict_url,small_images,reserve_price,zk_final_price,user_type,provcity,item_url,seller_id,volume,cat_leaf_name,cat_name,nick"
         req.platform = 1
         req.num_iids = item_id
         try:
 
-            resp= req.getResponse()
+            resp = req.getResponse()
 
 #            reqJson = json.loads(resp)
             item_info = resp['tbk_item_info_get_response']['results']['n_tbk_item'][0]
 
-            pic = item_info['pict_url']# 图片
-            location = item_info['provcity']# 产地
-            title = item_info['title']# 原始标题
-            item_url = item_info['item_url']
-
+            print('log out')
             print(item_info)
-            dic = {}
-            dic['pic'] = pic
-            dic['location'] = location
-            dic['title'] = title
-            dic['item_url'] = item_url
-            
-            return dic
+            return item_info
         except Exception as e:
             print(e)
             return False
         
-
     # 获取item id
-    def getItemID(self, relatedURL):
-        matchObj = re.findall(r'.*id=(.*).*', relatedURL)
-        if not matchObj:
+    def get_item_id(self, related_url):
+        match_obj = re.findall(r'.*id=(.*).*', related_url)
+        if not match_obj:
             return False
-        itemID = matchObj[0]
-        return itemID
+        item_id = match_obj[0]
+        return item_id
         
-    #将采集群发送的url,提取相关的id,并转换为券链接
-    def conver_url(self, coupon_url, itemID, pid):
+    # 将采集群发送的url,提取相关的id,并转换为券链接
+    def convert_url(self, coupon_url, item_id, pid):
         # 从coupon中提取activityID
         Loger.info(coupon_url)
-        activityId = ''
-        matchObj = re.findall(r'.*activityId=(.*)&.*', coupon_url)
-        if not matchObj:
-            matchObj = re.findall(r'.*activityId=(.*)', coupon_url)
-            if not matchObj:
-                matchObj = re.findall(r'.*activity_id=(.*)', coupon_url)
-            else:
-                Loger.info('error of conver_url')
-        Loger.info(matchObj)
-        activityId = matchObj[0]
 
-        # 构造url
-        finaly_url = self.baseURL + 'activityId=' + activityId + '&pid=' + pid + '&itemId=' + itemID + '&af=1'#+ '&src=pgy_pgyqf&dx=1'
-                
-        Loger.info(finaly_url)
-        return finaly_url
+        match_obj = re.findall(r'.*activityId=(.*)&.*', coupon_url)
+        Loger.info(match_obj)
+        if not match_obj:
+            Loger.info('not 1')
+            match_obj = re.findall(r'.*activityId=(.*)', coupon_url)
+            if not match_obj:
+                Loger.info('not 2')
+                match_obj = re.findall(r'.*activity_id=(.*)', coupon_url)
+            else:
+                Loger.info('error of convert_url')
+        Loger.info(match_obj)
+        activity_id = match_obj[0]
+
+        return self.baseURL, activity_id
+
